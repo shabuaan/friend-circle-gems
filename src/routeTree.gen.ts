@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedCirclesRouteImport } from './routes/_authenticated/circles'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedFriendsIndexRouteImport } from './routes/_authenticated/friends/index'
 import { Route as AuthenticatedFriendsFriendIdRouteImport } from './routes/_authenticated/friends/$friendId'
@@ -29,6 +30,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCirclesRoute = AuthenticatedCirclesRouteImport.update({
+  id: '/circles',
+  path: '/circles',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -51,6 +57,7 @@ const AuthenticatedFriendsFriendIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/circles': typeof AuthenticatedCirclesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/friends/$friendId': typeof AuthenticatedFriendsFriendIdRoute
   '/friends/': typeof AuthenticatedFriendsIndexRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/circles': typeof AuthenticatedCirclesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/friends/$friendId': typeof AuthenticatedFriendsFriendIdRoute
   '/friends': typeof AuthenticatedFriendsIndexRoute
@@ -67,20 +75,34 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/circles': typeof AuthenticatedCirclesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/friends/$friendId': typeof AuthenticatedFriendsFriendIdRoute
   '/_authenticated/friends/': typeof AuthenticatedFriendsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/friends/$friendId' | '/friends/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/circles'
+    | '/dashboard'
+    | '/friends/$friendId'
+    | '/friends/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/friends/$friendId' | '/friends'
+  to:
+    | '/'
+    | '/auth'
+    | '/circles'
+    | '/dashboard'
+    | '/friends/$friendId'
+    | '/friends'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/circles'
     | '/_authenticated/dashboard'
     | '/_authenticated/friends/$friendId'
     | '/_authenticated/friends/'
@@ -115,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/circles': {
+      id: '/_authenticated/circles'
+      path: '/circles'
+      fullPath: '/circles'
+      preLoaderRoute: typeof AuthenticatedCirclesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -140,12 +169,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCirclesRoute: typeof AuthenticatedCirclesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFriendsFriendIdRoute: typeof AuthenticatedFriendsFriendIdRoute
   AuthenticatedFriendsIndexRoute: typeof AuthenticatedFriendsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCirclesRoute: AuthenticatedCirclesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFriendsFriendIdRoute: AuthenticatedFriendsFriendIdRoute,
   AuthenticatedFriendsIndexRoute: AuthenticatedFriendsIndexRoute,
