@@ -251,12 +251,11 @@ export function FriendForm({
                   />
                 </Field>
                 <div className="sm:col-span-2">
-                  <Field label="Photo URL" hint="Paste a link to a picture of them">
-                    <Input
-                      type="url"
+                  <Field label="Photo" hint="Upload a picture from your device (max 5 MB)">
+                    <PhotoUpload
+                      name={values.name}
                       value={values.photo_url}
-                      onChange={(e) => set("photo_url", e.target.value)}
-                      placeholder="https://…"
+                      onChange={(v) => set("photo_url", v)}
                     />
                   </Field>
                 </div>
