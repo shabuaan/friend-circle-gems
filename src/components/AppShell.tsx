@@ -49,7 +49,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 function TopHeader() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur md:left-0 md:right-0">
+    <header className="sticky top-0 z-30 border-b border-border accent-surface backdrop-blur md:left-0 md:right-0">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 md:pl-[calc(var(--sidebar-width)+1rem)] md:pr-6">
         <Link to="/dashboard" className="font-display text-lg font-semibold tracking-tight">
           Friend<span className="text-primary">Circles</span>
@@ -58,9 +58,11 @@ function TopHeader() {
           <MobileUserMenu />
         </div>
       </div>
+      <div aria-hidden className="accent-bar h-0.5 w-full opacity-80" />
     </header>
   );
 }
+
 
 function MobileUserMenu() {
   const navigate = useNavigate();
