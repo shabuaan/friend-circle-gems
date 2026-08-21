@@ -179,7 +179,7 @@ function DesktopSidebar() {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-[var(--sidebar-width)] flex-col border-r border-border bg-card md:flex">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-[var(--sidebar-width)] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex">
       <div className="flex h-14 items-center px-4">
         <Palette className="size-5 text-primary" aria-hidden />
         <span className="ml-2 font-display text-base font-semibold tracking-tight">Menu</span>
