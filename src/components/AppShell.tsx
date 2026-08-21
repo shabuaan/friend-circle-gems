@@ -118,7 +118,7 @@ function MobileBottomNav() {
   const birthdayCount = useBirthdayAlertCount();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border accent-surface pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
       <ul className="mx-auto grid max-w-md grid-cols-4 gap-1 px-2 py-1.5">
         {NAV.map(({ to, label, icon: Icon }) => {
           const active = currentPath === to || currentPath.startsWith(`${to}/`);
@@ -132,9 +132,10 @@ function MobileBottomNav() {
                 className={cn(
                   "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[0.6875rem] font-medium leading-none transition-colors active:scale-[0.97]",
                   active
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-primary text-primary-foreground shadow-paper"
                     : "text-muted-foreground hover:text-foreground",
                 )}
+
               >
                 <span className="relative">
                   <Icon
