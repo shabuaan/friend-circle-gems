@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CakeSlice, Gift, Users, CircleDashed, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { ThemePicker } from "@/components/ThemePicker";
 
 const NAV = [
   { to: "/dashboard", label: "Home", icon: Gift },
@@ -41,6 +42,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="hidden sm:inline">{label}</span>
               </Link>
             ))}
+            <ThemePicker />
             <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label="Sign out">
               <LogOut className="size-4" />
             </Button>

@@ -16,6 +16,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import { FriendAvatar } from "@/components/FriendAvatar";
+import { Upload, X } from "lucide-react";
 
 const COLOR_OPTIONS = ["Blue", "Green", "Red", "Yellow", "Purple", "Black", "Pink"];
 const CLOTHING_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -251,12 +253,11 @@ export function FriendForm({
                   />
                 </Field>
                 <div className="sm:col-span-2">
-                  <Field label="Photo URL" hint="Paste a link to a picture of them">
-                    <Input
-                      type="url"
+                  <Field label="Photo" hint="Upload a picture from your device (max 5 MB)">
+                    <PhotoUpload
+                      name={values.name}
                       value={values.photo_url}
-                      onChange={(e) => set("photo_url", e.target.value)}
-                      placeholder="https://…"
+                      onChange={(v) => set("photo_url", v)}
                     />
                   </Field>
                 </div>
@@ -466,6 +467,77 @@ function Suggestions({ options, onPick }: { options: string[]; onPick: (text: st
           + {option}
         </Chip>
       ))}
+    </div>
+  );
+}
+
+function PhotoUpload({
+  name,
+  value,
+  onChange,
+}: {
+  name: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFile(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("That image is larger than 5 MB.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const userId = await currentUserId();
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("friend-photos")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (error) throw new Error(error.message);
+      onChange(path);
+      toast.success("Photo uploaded");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <FriendAvatar name={name || "?"} photoUrl={value || null} className="size-14" />
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs text-secondary-foreground transition-colors hover:border-primary/50">
+          <Upload className="size-3.5" aria-hidden />
+          {uploading ? "Uploading…" : value ? "Replace photo" : "Upload photo"}
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            disabled={uploading}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (file) void handleFile(file);
+            }}
+          />
+        </label>
+        {value ? (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <X className="size-3.5" aria-hidden /> Remove
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }
