@@ -10,6 +10,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
+
+const COLOR_OPTIONS = ["Blue", "Green", "Red", "Yellow", "Purple", "Black", "Pink"];
+const CLOTHING_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+const FOOD_SUGGESTIONS = ["Coffee", "Chocolate", "Sushi", "Spicy food", "Tea", "Cheese"];
+const MEDIA_SUGGESTIONS = ["Podcasts", "Sci-fi", "Rom-coms", "Fiction", "Live music", "Anime"];
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -81,6 +93,21 @@ export function FriendForm({
   const set = <K extends keyof FriendFormValues>(key: K, value: FriendFormValues[K]) =>
     setValues((prev) => ({ ...prev, [key]: value }));
 
+  const append = (key: "favorite_foods" | "favorite_media", text: string) =>
+    setValues((prev) => {
+      const current = prev[key].trim();
+      const parts = current
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+      if (parts.some((p) => p.toLowerCase() === text.toLowerCase())) {
+        return { ...prev, [key]: parts.filter((p) => p.toLowerCase() !== text.toLowerCase()).join(", ") };
+      }
+      return { ...prev, [key]: [...parts, text].join(", ") };
+    });
+
+
+
   const mutation = useMutation({
     mutationFn: async () => {
       const payload = {
@@ -125,6 +152,22 @@ export function FriendForm({
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const filled = [
+    values.nickname,
+    values.birthday,
+    values.email,
+    values.phone,
+    values.favorite_color,
+    values.favorite_foods,
+    values.favorite_media,
+    values.wishlist,
+    values.dislikes,
+    values.clothing_size,
+    values.shoe_size,
+    values.how_we_met,
+    values.notes,
+  ].filter((v) => v.trim() !== "").length;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
@@ -133,9 +176,11 @@ export function FriendForm({
             {friend ? `Edit ${friend.name}` : "Add a friend"}
           </DialogTitle>
           <DialogDescription>
-            Fill in what you know today — you can keep adding details over time.
+            Only the name is required. Everything else is optional — {filled} of 13 extra details
+            added so far.
           </DialogDescription>
         </DialogHeader>
+
 
         <form
           className="space-y-4"
@@ -149,13 +194,23 @@ export function FriendForm({
           }}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Name" required>
-              <Input value={values.name} onChange={(e) => set("name", e.target.value)} required />
+            <Field label="Name" required hint="How you'd call them in a message">
+              <Input
+                value={values.name}
+                onChange={(e) => set("name", e.target.value)}
+                placeholder="e.g. Aisha Rasheed"
+                autoFocus
+                required
+              />
             </Field>
             <Field label="Nickname">
-              <Input value={values.nickname} onChange={(e) => set("nickname", e.target.value)} />
+              <Input
+                value={values.nickname}
+                onChange={(e) => set("nickname", e.target.value)}
+                placeholder="e.g. Ish"
+              />
             </Field>
-            <Field label="Birthday">
+            <Field label="Birthday" hint="Tick below if you only know day & month">
               <Input
                 type="date"
                 value={values.birthday}
@@ -163,7 +218,7 @@ export function FriendForm({
               />
             </Field>
             <div className="flex items-end pb-2">
-              <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
                 <Checkbox
                   checked={!values.birthday_has_year}
                   onCheckedChange={(checked) => set("birthday_has_year", !checked)}
@@ -171,70 +226,175 @@ export function FriendForm({
                 I don't know the year
               </label>
             </div>
-            <Field label="Email">
-              <Input
-                type="email"
-                value={values.email}
-                onChange={(e) => set("email", e.target.value)}
-              />
-            </Field>
-            <Field label="Phone">
-              <Input value={values.phone} onChange={(e) => set("phone", e.target.value)} />
-            </Field>
-            <Field label="Favourite colour">
-              <Input
-                value={values.favorite_color}
-                onChange={(e) => set("favorite_color", e.target.value)}
-              />
-            </Field>
-            <Field label="Photo URL">
-              <Input value={values.photo_url} onChange={(e) => set("photo_url", e.target.value)} />
-            </Field>
-            <Field label="Clothing size">
-              <Input
-                value={values.clothing_size}
-                onChange={(e) => set("clothing_size", e.target.value)}
-              />
-            </Field>
-            <Field label="Shoe size">
-              <Input value={values.shoe_size} onChange={(e) => set("shoe_size", e.target.value)} />
-            </Field>
           </div>
 
-          <Field label="Favourite foods & drinks">
-            <Textarea
-              rows={2}
-              value={values.favorite_foods}
-              onChange={(e) => set("favorite_foods", e.target.value)}
-            />
-          </Field>
-          <Field label="Favourite music, films, books">
-            <Textarea
-              rows={2}
-              value={values.favorite_media}
-              onChange={(e) => set("favorite_media", e.target.value)}
-            />
-          </Field>
-          <Field label="Wishlist / things they've hinted at">
-            <Textarea
-              rows={2}
-              value={values.wishlist}
-              onChange={(e) => set("wishlist", e.target.value)}
-            />
-          </Field>
-          <Field label="Dislikes & allergies">
-            <Textarea
-              rows={2}
-              value={values.dislikes}
-              onChange={(e) => set("dislikes", e.target.value)}
-            />
-          </Field>
-          <Field label="How we met">
-            <Input value={values.how_we_met} onChange={(e) => set("how_we_met", e.target.value)} />
-          </Field>
-          <Field label="Anything else">
-            <Textarea rows={2} value={values.notes} onChange={(e) => set("notes", e.target.value)} />
-          </Field>
+          <Accordion type="multiple" defaultValue={["favourites"]} className="w-full">
+            <AccordionItem value="contact">
+              <AccordionTrigger className="font-display text-sm">Contact & photo</AccordionTrigger>
+              <AccordionContent className="grid gap-4 pt-1 sm:grid-cols-2">
+                <Field label="Email">
+                  <Input
+                    type="email"
+                    inputMode="email"
+                    value={values.email}
+                    onChange={(e) => set("email", e.target.value)}
+                    placeholder="name@example.com"
+                  />
+                </Field>
+                <Field label="Phone">
+                  <Input
+                    type="tel"
+                    inputMode="tel"
+                    value={values.phone}
+                    onChange={(e) => set("phone", e.target.value)}
+                    placeholder="+960 777 1234"
+                  />
+                </Field>
+                <div className="sm:col-span-2">
+                  <Field label="Photo URL" hint="Paste a link to a picture of them">
+                    <Input
+                      type="url"
+                      value={values.photo_url}
+                      onChange={(e) => set("photo_url", e.target.value)}
+                      placeholder="https://…"
+                    />
+                  </Field>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="favourites">
+              <AccordionTrigger className="font-display text-sm">
+                Favourites & interests
+              </AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-1">
+                <Field label="Favourite colour">
+                  <div className="flex flex-wrap gap-2">
+                    {COLOR_OPTIONS.map((color) => (
+                      <Chip
+                        key={color}
+                        active={values.favorite_color.toLowerCase() === color.toLowerCase()}
+                        onClick={() =>
+                          set(
+                            "favorite_color",
+                            values.favorite_color.toLowerCase() === color.toLowerCase() ? "" : color,
+                          )
+                        }
+                      >
+                        {color}
+                      </Chip>
+                    ))}
+                  </div>
+                  <Input
+                    className="mt-2"
+                    value={values.favorite_color}
+                    onChange={(e) => set("favorite_color", e.target.value)}
+                    placeholder="or type another colour"
+                  />
+                </Field>
+
+                <Field label="Favourite foods & drinks" hint="Separate with commas">
+                  <Textarea
+                    rows={2}
+                    value={values.favorite_foods}
+                    onChange={(e) => set("favorite_foods", e.target.value)}
+                    placeholder="Sushi, oat flat white, dark chocolate"
+                  />
+                  <Suggestions
+                    options={FOOD_SUGGESTIONS}
+                    onPick={(text) => append("favorite_foods", text)}
+                  />
+                </Field>
+
+                <Field label="Music, films, books" hint="Separate with commas">
+                  <Textarea
+                    rows={2}
+                    value={values.favorite_media}
+                    onChange={(e) => set("favorite_media", e.target.value)}
+                    placeholder="Fleetwood Mac, Studio Ghibli, crime novels"
+                  />
+                  <Suggestions
+                    options={MEDIA_SUGGESTIONS}
+                    onPick={(text) => append("favorite_media", text)}
+                  />
+                </Field>
+
+                <Field label="Wishlist" hint="Things they've hinted at wanting">
+                  <Textarea
+                    rows={2}
+                    value={values.wishlist}
+                    onChange={(e) => set("wishlist", e.target.value)}
+                    placeholder="A good rain jacket, pottery class"
+                  />
+                </Field>
+
+                <Field label="Dislikes & allergies">
+                  <Textarea
+                    rows={2}
+                    value={values.dislikes}
+                    onChange={(e) => set("dislikes", e.target.value)}
+                    placeholder="Nut allergy, doesn't drink alcohol"
+                  />
+                </Field>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="sizes">
+              <AccordionTrigger className="font-display text-sm">Sizes</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-1">
+                <Field label="Clothing size">
+                  <div className="flex flex-wrap gap-2">
+                    {CLOTHING_SIZES.map((size) => (
+                      <Chip
+                        key={size}
+                        active={values.clothing_size === size}
+                        onClick={() =>
+                          set("clothing_size", values.clothing_size === size ? "" : size)
+                        }
+                      >
+                        {size}
+                      </Chip>
+                    ))}
+                  </div>
+                  <Input
+                    className="mt-2"
+                    value={values.clothing_size}
+                    onChange={(e) => set("clothing_size", e.target.value)}
+                    placeholder="or type a size"
+                  />
+                </Field>
+                <Field label="Shoe size">
+                  <Input
+                    value={values.shoe_size}
+                    onChange={(e) => set("shoe_size", e.target.value)}
+                    placeholder="e.g. UK 8 / EU 42"
+                  />
+                </Field>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="story">
+              <AccordionTrigger className="font-display text-sm">Your story</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-1">
+                <Field label="How we met">
+                  <Input
+                    value={values.how_we_met}
+                    onChange={(e) => set("how_we_met", e.target.value)}
+                    placeholder="University, 2016"
+                  />
+                </Field>
+                <Field label="Anything else">
+                  <Textarea
+                    rows={2}
+                    value={values.notes}
+                    onChange={(e) => set("notes", e.target.value)}
+                    placeholder="Loves surprise plans, hates loud restaurants"
+                  />
+                </Field>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
 
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
@@ -253,10 +413,12 @@ export function FriendForm({
 function Field({
   label,
   required,
+  hint,
   children,
 }: {
   label: string;
   required?: boolean;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -266,6 +428,44 @@ function Field({
         {required ? <span className="text-destructive"> *</span> : null}
       </Label>
       {children}
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "rounded-full border px-3 py-1 text-xs transition-colors",
+        active
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-secondary text-secondary-foreground hover:border-primary/50",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Suggestions({ options, onPick }: { options: string[]; onPick: (text: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2 pt-1">
+      {options.map((option) => (
+        <Chip key={option} onClick={() => onPick(option)}>
+          + {option}
+        </Chip>
+      ))}
     </div>
   );
 }
