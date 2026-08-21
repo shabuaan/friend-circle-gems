@@ -49,7 +49,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 function TopHeader() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur md:left-0 md:right-0">
+    <header className="sticky top-0 z-30 border-b border-border accent-surface backdrop-blur md:left-0 md:right-0">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 md:pl-[calc(var(--sidebar-width)+1rem)] md:pr-6">
         <Link to="/dashboard" className="font-display text-lg font-semibold tracking-tight">
           Friend<span className="text-primary">Circles</span>
@@ -58,9 +58,11 @@ function TopHeader() {
           <MobileUserMenu />
         </div>
       </div>
+      <div aria-hidden className="accent-bar h-0.5 w-full opacity-80" />
     </header>
   );
 }
+
 
 function MobileUserMenu() {
   const navigate = useNavigate();
@@ -116,7 +118,7 @@ function MobileBottomNav() {
   const birthdayCount = useBirthdayAlertCount();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border accent-surface pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
       <ul className="mx-auto grid max-w-md grid-cols-4 gap-1 px-2 py-1.5">
         {NAV.map(({ to, label, icon: Icon }) => {
           const active = currentPath === to || currentPath.startsWith(`${to}/`);
@@ -130,9 +132,10 @@ function MobileBottomNav() {
                 className={cn(
                   "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[0.6875rem] font-medium leading-none transition-colors active:scale-[0.97]",
                   active
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-primary text-primary-foreground shadow-paper"
                     : "text-muted-foreground hover:text-foreground",
                 )}
+
               >
                 <span className="relative">
                   <Icon
@@ -150,7 +153,8 @@ function MobileBottomNav() {
                   aria-hidden
                   className={cn(
                     "absolute bottom-1 h-1 w-1 rounded-full transition-opacity",
-                    active ? "bg-primary opacity-100" : "opacity-0",
+                    active ? "bg-primary-foreground/70 opacity-100" : "opacity-0",
+
                   )}
                 />
               </Link>
@@ -177,7 +181,7 @@ function DesktopSidebar() {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-[var(--sidebar-width)] flex-col border-r border-border bg-card md:flex">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-[var(--sidebar-width)] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex">
       <div className="flex h-14 items-center px-4">
         <Palette className="size-5 text-primary" aria-hidden />
         <span className="ml-2 font-display text-base font-semibold tracking-tight">Menu</span>
@@ -194,9 +198,10 @@ function DesktopSidebar() {
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     active
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                      ? "bg-primary text-primary-foreground shadow-paper"
+                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
                   )}
+
                 >
                   <Icon className="size-[1.125rem]" aria-hidden />
                   {label}
