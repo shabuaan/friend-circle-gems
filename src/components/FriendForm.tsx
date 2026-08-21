@@ -125,6 +125,22 @@ export function FriendForm({
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const filled = [
+    values.nickname,
+    values.birthday,
+    values.email,
+    values.phone,
+    values.favorite_color,
+    values.favorite_foods,
+    values.favorite_media,
+    values.wishlist,
+    values.dislikes,
+    values.clothing_size,
+    values.shoe_size,
+    values.how_we_met,
+    values.notes,
+  ].filter((v) => v.trim() !== "").length;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
@@ -133,9 +149,11 @@ export function FriendForm({
             {friend ? `Edit ${friend.name}` : "Add a friend"}
           </DialogTitle>
           <DialogDescription>
-            Fill in what you know today — you can keep adding details over time.
+            Only the name is required. Everything else is optional — {filled} of 13 extra details
+            added so far.
           </DialogDescription>
         </DialogHeader>
+
 
         <form
           className="space-y-4"
