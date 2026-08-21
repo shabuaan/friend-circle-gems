@@ -172,39 +172,38 @@
   border: 1px solid var(--color-border);
 }
 
-/* Accent themes — swapped via data-accent on <html>. */
+/* Accent themes — swapped via data-accent on <html>.
+   Each accent only sets its hue + primary; every neutral above follows. */
 :root,
 [data-accent="terracotta"] {
+  --accent-h: 38;
   --accent-swatch: oklch(0.56 0.14 38);
 }
 
 [data-accent="sage"] {
-  --primary: oklch(0.52 0.09 155);
-  --ring: oklch(0.52 0.09 155);
-  --sidebar-primary: oklch(0.52 0.09 155);
-  --sidebar-ring: oklch(0.52 0.09 155);
-  --accent: oklch(0.88 0.05 120);
-  --accent-foreground: oklch(0.28 0.05 150);
-  --accent-swatch: oklch(0.52 0.09 155);
+  --accent-h: 155;
+  --primary: oklch(0.52 0.1 155);
+  --ring: oklch(0.52 0.1 155);
+  --sidebar-primary: oklch(0.52 0.1 155);
+  --sidebar-ring: oklch(0.52 0.1 155);
+  --accent-swatch: oklch(0.52 0.1 155);
 }
 
 [data-accent="indigo"] {
+  --accent-h: 265;
   --primary: oklch(0.52 0.14 265);
   --ring: oklch(0.52 0.14 265);
   --sidebar-primary: oklch(0.52 0.14 265);
   --sidebar-ring: oklch(0.52 0.14 265);
-  --accent: oklch(0.88 0.05 265);
-  --accent-foreground: oklch(0.3 0.09 265);
   --accent-swatch: oklch(0.52 0.14 265);
 }
 
 [data-accent="plum"] {
+  --accent-h: 330;
   --primary: oklch(0.5 0.14 330);
   --ring: oklch(0.5 0.14 330);
   --sidebar-primary: oklch(0.5 0.14 330);
   --sidebar-ring: oklch(0.5 0.14 330);
-  --accent: oklch(0.88 0.05 330);
-  --accent-foreground: oklch(0.3 0.09 330);
   --accent-swatch: oklch(0.5 0.14 330);
 }
 
@@ -212,25 +211,34 @@
   --primary: oklch(0.72 0.11 155);
   --ring: oklch(0.72 0.11 155);
   --sidebar-primary: oklch(0.72 0.11 155);
-  --primary-foreground: oklch(0.2 0.03 150);
-  --accent: oklch(0.4 0.06 150);
-  --accent-foreground: oklch(0.95 0.02 145);
 }
 
 .dark[data-accent="indigo"] {
   --primary: oklch(0.7 0.13 265);
   --ring: oklch(0.7 0.13 265);
   --sidebar-primary: oklch(0.7 0.13 265);
-  --primary-foreground: oklch(0.2 0.03 265);
-  --accent: oklch(0.4 0.07 265);
-  --accent-foreground: oklch(0.95 0.02 265);
 }
 
 .dark[data-accent="plum"] {
   --primary: oklch(0.7 0.13 330);
   --ring: oklch(0.7 0.13 330);
   --sidebar-primary: oklch(0.7 0.13 330);
-  --primary-foreground: oklch(0.2 0.03 330);
-  --accent: oklch(0.4 0.07 330);
-  --accent-foreground: oklch(0.95 0.02 330);
 }
+
+/* Accent-driven surfaces for headers, heroes and highlights. */
+@utility accent-surface {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--primary) 16%, var(--card)),
+    color-mix(in oklab, var(--primary) 4%, var(--card))
+  );
+}
+
+@utility accent-bar {
+  background-image: linear-gradient(
+    90deg,
+    var(--primary),
+    color-mix(in oklab, var(--primary) 45%, var(--accent))
+  );
+}
+
