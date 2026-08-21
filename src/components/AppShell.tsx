@@ -37,8 +37,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       <TopHeader />
       <DesktopSidebar />
-      <main className="mx-auto max-w-5xl px-4 pb-24 pt-4 md:pl-[calc(var(--sidebar-width)+1rem)] md:pr-6 lg:px-8">
-        {children}
+      <main className="px-4 pb-24 pt-4 md:ml-[var(--sidebar-width)] md:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl">{children}</div>
       </main>
       <MobileBottomNav />
     </div>
