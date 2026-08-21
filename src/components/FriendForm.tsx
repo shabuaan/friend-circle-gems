@@ -398,10 +398,12 @@ export function FriendForm({
 function Field({
   label,
   required,
+  hint,
   children,
 }: {
   label: string;
   required?: boolean;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -411,6 +413,44 @@ function Field({
         {required ? <span className="text-destructive"> *</span> : null}
       </Label>
       {children}
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "rounded-full border px-3 py-1 text-xs transition-colors",
+        active
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-secondary text-secondary-foreground hover:border-primary/50",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Suggestions({ options, onPick }: { options: string[]; onPick: (text: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2 pt-1">
+      {options.map((option) => (
+        <Chip key={option} onClick={() => onPick(option)}>
+          + {option}
+        </Chip>
+      ))}
     </div>
   );
 }
