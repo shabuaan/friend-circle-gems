@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  CakeSlice,
-  Gift,
+  Cake,
+  House,
+  Contact,
   Users,
-  CircleDashed,
   LogOut,
   Moon,
   Sun,
@@ -23,14 +23,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useBirthdayAlertCount } from "@/hooks/useBirthdayAlerts";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/dashboard", label: "Home", icon: Gift },
-  { to: "/friends", label: "Friends", icon: Users },
-  { to: "/circles", label: "Circles", icon: CircleDashed },
-  { to: "/birthdays", label: "Birthdays", icon: CakeSlice },
+  { to: "/dashboard", label: "Home", icon: House },
+  { to: "/friends", label: "Friends", icon: Contact },
+  { to: "/circles", label: "Circles", icon: Users },
+  { to: "/birthdays", label: "Birthdays", icon: Cake },
 ] as const;
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -111,25 +113,46 @@ function MobileUserMenu() {
 
 function MobileBottomNav() {
   const currentPath = useRouterState({ select: (router) => router.location.pathname });
+  const birthdayCount = useBirthdayAlertCount();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-      <ul className="grid grid-cols-4">
+      <ul className="mx-auto grid max-w-md grid-cols-4 gap-1 px-2 py-1.5">
         {NAV.map(({ to, label, icon: Icon }) => {
           const active = currentPath === to || currentPath.startsWith(`${to}/`);
+          const badge = to === "/birthdays" && birthdayCount > 0 ? birthdayCount : 0;
           return (
             <li key={to}>
               <Link
                 to={to}
+                aria-current={active ? "page" : undefined}
+                aria-label={badge ? `${label}, ${badge} needing attention` : label}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 py-2.5 text-xs font-medium transition-colors",
+                  "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[0.6875rem] font-medium leading-none transition-colors active:scale-[0.97]",
                   active
-                    ? "text-primary"
+                    ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <Icon className="size-5" aria-hidden />
-                <span>{label}</span>
+                <span className="relative">
+                  <Icon
+                    className={cn("size-6", active && "stroke-[2.25]")}
+                    aria-hidden
+                  />
+                  {badge > 0 && (
+                    <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[0.625rem] font-semibold leading-none text-destructive-foreground">
+                      {badge > 9 ? "9+" : badge}
+                    </span>
+                  )}
+                </span>
+                <span className="truncate">{label}</span>
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute bottom-1 h-1 w-1 rounded-full transition-opacity",
+                    active ? "bg-primary opacity-100" : "opacity-0",
+                  )}
+                />
               </Link>
             </li>
           );
@@ -138,6 +161,7 @@ function MobileBottomNav() {
     </nav>
   );
 }
+
 
 function DesktopSidebar() {
   const navigate = useNavigate();
