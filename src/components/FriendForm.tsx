@@ -93,6 +93,21 @@ export function FriendForm({
   const set = <K extends keyof FriendFormValues>(key: K, value: FriendFormValues[K]) =>
     setValues((prev) => ({ ...prev, [key]: value }));
 
+  const append = (key: "favorite_foods" | "favorite_media", text: string) =>
+    setValues((prev) => {
+      const current = prev[key].trim();
+      const parts = current
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+      if (parts.some((p) => p.toLowerCase() === text.toLowerCase())) {
+        return { ...prev, [key]: parts.filter((p) => p.toLowerCase() !== text.toLowerCase()).join(", ") };
+      }
+      return { ...prev, [key]: [...parts, text].join(", ") };
+    });
+
+
+
   const mutation = useMutation({
     mutationFn: async () => {
       const payload = {
