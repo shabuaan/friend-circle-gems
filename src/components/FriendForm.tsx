@@ -10,6 +10,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
+
+const COLOR_OPTIONS = ["Blue", "Green", "Red", "Yellow", "Purple", "Black", "Pink"];
+const CLOTHING_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+const FOOD_SUGGESTIONS = ["Coffee", "Chocolate", "Sushi", "Spicy food", "Tea", "Cheese"];
+const MEDIA_SUGGESTIONS = ["Podcasts", "Sci-fi", "Rom-coms", "Fiction", "Live music", "Anime"];
+import {
   Dialog,
   DialogContent,
   DialogDescription,
