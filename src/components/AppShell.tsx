@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  CakeSlice,
-  Gift,
+  Cake,
+  House,
+  Contact,
   Users,
-  CircleDashed,
   LogOut,
   Moon,
   Sun,
@@ -23,14 +23,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useBirthdayAlertCount } from "@/hooks/useBirthdayAlerts";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/dashboard", label: "Home", icon: Gift },
-  { to: "/friends", label: "Friends", icon: Users },
-  { to: "/circles", label: "Circles", icon: CircleDashed },
-  { to: "/birthdays", label: "Birthdays", icon: CakeSlice },
+  { to: "/dashboard", label: "Home", icon: House },
+  { to: "/friends", label: "Friends", icon: Contact },
+  { to: "/circles", label: "Circles", icon: Users },
+  { to: "/birthdays", label: "Birthdays", icon: Cake },
 ] as const;
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
