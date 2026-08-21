@@ -196,9 +196,10 @@ function DesktopSidebar() {
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     active
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                      ? "bg-primary text-primary-foreground shadow-paper"
+                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
                   )}
+
                 >
                   <Icon className="size-[1.125rem]" aria-hidden />
                   {label}
