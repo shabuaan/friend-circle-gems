@@ -153,7 +153,8 @@ function MobileBottomNav() {
                   aria-hidden
                   className={cn(
                     "absolute bottom-1 h-1 w-1 rounded-full transition-opacity",
-                    active ? "bg-primary opacity-100" : "opacity-0",
+                    active ? "bg-primary-foreground/70 opacity-100" : "opacity-0",
+
                   )}
                 />
               </Link>
