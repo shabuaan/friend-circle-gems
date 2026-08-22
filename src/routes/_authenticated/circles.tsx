@@ -201,6 +201,7 @@ function CirclesPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-1">
+                <CircleDuplicates circleId={circle.id} />
                 {circleFriends.length === 0 && (
                   <p className="text-sm text-muted-foreground">
                     No members yet — add this circle from a friend's profile.
@@ -219,6 +220,11 @@ function CirclesPage() {
                       className="size-8 text-xs"
                     />
                     <span className="truncate text-sm">{friend!.name}</span>
+                    {friend!.linked_user_id === userId && (
+                      <Badge variant="secondary" className="ml-auto text-[10px]">
+                        You
+                      </Badge>
+                    )}
                   </Link>
                 ))}
               </CardContent>
