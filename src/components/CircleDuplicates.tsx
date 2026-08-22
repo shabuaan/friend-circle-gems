@@ -1,37 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Users } from "lucide-react";
-import { circleDuplicatesQuery, dismissDuplicate, mergeFriends } from "@/lib/duplicates";
-import { currentUserId } from "@/lib/queries";
+import { circleDuplicatesQuery, type DuplicateSuggestion } from "@/lib/duplicates";
+import { MergeDuplicateDialog } from "@/components/MergeDuplicateDialog";
 import { Button } from "@/components/ui/button";
 
 export function CircleDuplicates({ circleId }: { circleId: string }) {
-  const queryClient = useQueryClient();
   const duplicates = useQuery(circleDuplicatesQuery(circleId));
-
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ["circle_duplicates", circleId] });
-    queryClient.invalidateQueries({ queryKey: ["friends"] });
-    queryClient.invalidateQueries({ queryKey: ["circle_members"] });
-  };
-
-  const merge = useMutation({
-    mutationFn: ({ keep, drop }: { keep: string; drop: string }) => mergeFriends(keep, drop),
-    onSuccess: () => {
-      invalidate();
-      toast.success("Profiles merged");
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
-
-  const dismiss = useMutation({
-    mutationFn: async ({ a, b }: { a: string; b: string }) => {
-      const uid = await currentUserId();
-      await dismissDuplicate(uid, a, b);
-    },
-    onSuccess: invalidate,
-    onError: (error: Error) => toast.error(error.message),
-  });
+  const [active, setActive] = useState<DuplicateSuggestion | null>(null);
 
   const rows = duplicates.data ?? [];
   if (rows.length === 0) return null;
@@ -49,25 +25,20 @@ export function CircleDuplicates({ circleId }: { circleId: string }) {
               {row.other_is_self ? ", who just joined this circle" : ""} (matching {row.reason}).
             </span>
           </p>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              disabled={merge.isPending}
-              onClick={() => merge.mutate({ keep: row.other_id, drop: row.mine_id })}
-            >
-              Merge into their profile
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              disabled={dismiss.isPending}
-              onClick={() => dismiss.mutate({ a: row.mine_id, b: row.other_id })}
-            >
-              Keep both
-            </Button>
-          </div>
+          <Button size="sm" onClick={() => setActive(row)}>
+            Review match
+          </Button>
         </div>
       ))}
+
+      {active && (
+        <MergeDuplicateDialog
+          row={active}
+          circleId={circleId}
+          open={active !== null}
+          onOpenChange={(next) => !next && setActive(null)}
+        />
+      )}
     </div>
   );
 }
