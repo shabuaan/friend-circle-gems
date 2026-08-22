@@ -8,6 +8,7 @@ import { circleMembersQuery, circlesQuery, currentUserId, friendsQuery } from "@
 import { CIRCLE_COLORS, circleColorClass } from "@/lib/types";
 import { circleSharesQuery } from "@/lib/sharing";
 import { ShareCircleDialog } from "@/components/ShareCircleDialog";
+import { CircleDuplicates } from "@/components/CircleDuplicates";
 import { Badge } from "@/components/ui/badge";
 import { FriendAvatar } from "@/components/FriendAvatar";
 import { Button } from "@/components/ui/button";
@@ -201,6 +202,7 @@ function CirclesPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-1">
+                <CircleDuplicates circleId={circle.id} />
                 {circleFriends.length === 0 && (
                   <p className="text-sm text-muted-foreground">
                     No members yet — add this circle from a friend's profile.
@@ -219,6 +221,11 @@ function CirclesPage() {
                       className="size-8 text-xs"
                     />
                     <span className="truncate text-sm">{friend!.name}</span>
+                    {friend!.linked_user_id === userId && (
+                      <Badge variant="secondary" className="ml-auto text-[10px]">
+                        You
+                      </Badge>
+                    )}
                   </Link>
                 ))}
               </CardContent>

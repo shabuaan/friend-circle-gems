@@ -197,6 +197,45 @@ export type Database = {
         }
         Relationships: []
       }
+      duplicate_dismissals: {
+        Row: {
+          created_at: string
+          friend_a: string
+          friend_b: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_a: string
+          friend_b: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_a?: string
+          friend_b?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duplicate_dismissals_friend_a_fkey"
+            columns: ["friend_a"]
+            isOneToOne: false
+            referencedRelation: "friends"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duplicate_dismissals_friend_b_fkey"
+            columns: ["friend_b"]
+            isOneToOne: false
+            referencedRelation: "friends"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_interests: {
         Row: {
           created_at: string
@@ -274,6 +313,8 @@ export type Database = {
           favorite_media: string | null
           how_we_met: string | null
           id: string
+          is_self: boolean
+          linked_user_id: string | null
           name: string
           nickname: string | null
           notes: string | null
@@ -296,6 +337,8 @@ export type Database = {
           favorite_media?: string | null
           how_we_met?: string | null
           id?: string
+          is_self?: boolean
+          linked_user_id?: string | null
           name: string
           nickname?: string | null
           notes?: string | null
@@ -318,6 +361,8 @@ export type Database = {
           favorite_media?: string | null
           how_we_met?: string | null
           id?: string
+          is_self?: boolean
+          linked_user_id?: string | null
           name?: string
           nickname?: string | null
           notes?: string | null
@@ -423,6 +468,21 @@ export type Database = {
           email: string
           user_id: string
         }[]
+      }
+      find_circle_duplicates: {
+        Args: { _circle: string }
+        Returns: {
+          mine_id: string
+          mine_name: string
+          other_id: string
+          other_is_self: boolean
+          other_name: string
+          reason: string
+        }[]
+      }
+      merge_friends: {
+        Args: { _drop: string; _keep: string }
+        Returns: undefined
       }
       shares_circle_with: { Args: { _a: string; _b: string }; Returns: boolean }
     }

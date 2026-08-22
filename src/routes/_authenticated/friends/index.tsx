@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { circleMembersQuery, circlesQuery, friendsQuery, interestsQuery } from "@/lib/queries";
+import { useAuth } from "@/hooks/useAuth";
 import { getBirthdayInfo, formatBirthdayLabel } from "@/lib/birthday";
 import { circleColorClass } from "@/lib/types";
 import { FriendAvatar } from "@/components/FriendAvatar";
@@ -36,6 +37,8 @@ export const Route = createFileRoute("/_authenticated/friends/")({
 function FriendsPage() {
   const [query, setQuery] = useState("");
   const [adding, setAdding] = useState(false);
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
   const friends = useQuery(friendsQuery());
   const circles = useQuery(circlesQuery());
   const members = useQuery(circleMembersQuery());
@@ -101,13 +104,21 @@ function FriendsPage() {
       <div className="grid gap-3 sm:grid-cols-2">
         {filtered.map(({ friend, friendCircles, friendInterests }) => {
           const info = getBirthdayInfo(friend.birthday, friend.birthday_has_year);
+          const isMe = friend.linked_user_id != null && friend.linked_user_id === userId;
           return (
             <Link key={friend.id} to="/friends/$friendId" params={{ friendId: friend.id }}>
               <Card className="paper h-full transition-colors hover:border-primary/50">
                 <CardContent className="flex gap-3 py-5">
                   <FriendAvatar name={friend.name} photoUrl={friend.photo_url} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-display font-semibold">{friend.name}</p>
+                    <p className="flex items-center gap-2 truncate font-display font-semibold">
+                      {friend.name}
+                      {isMe && (
+                        <Badge variant="secondary" className="text-[10px] font-normal">
+                          You
+                        </Badge>
+                      )}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {info ? formatBirthdayLabel(info) : "No birthday saved"}
                       {friend.nickname ? ` · "${friend.nickname}"` : ""}
