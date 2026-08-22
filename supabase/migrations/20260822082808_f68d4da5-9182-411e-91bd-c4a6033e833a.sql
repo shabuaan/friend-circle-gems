@@ -1,0 +1,11 @@
+REVOKE ALL ON FUNCTION public.can_access_circle(uuid, uuid) FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.can_access_circle(uuid, uuid) TO authenticated;
+REVOKE ALL ON FUNCTION public.can_access_friend(uuid, uuid) FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.can_access_friend(uuid, uuid) TO authenticated;
+REVOKE ALL ON FUNCTION public.shares_circle_with(uuid, uuid) FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.shares_circle_with(uuid, uuid) TO authenticated;
+REVOKE ALL ON FUNCTION public.accept_circle_invite(text) FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.accept_circle_invite(text) TO authenticated;
+REVOKE ALL ON FUNCTION public.circle_access_list(uuid) FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.circle_access_list(uuid) TO authenticated;
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM public, anon, authenticated;
