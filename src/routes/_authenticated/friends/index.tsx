@@ -36,6 +36,8 @@ export const Route = createFileRoute("/_authenticated/friends/")({
 function FriendsPage() {
   const [query, setQuery] = useState("");
   const [adding, setAdding] = useState(false);
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
   const friends = useQuery(friendsQuery());
   const circles = useQuery(circlesQuery());
   const members = useQuery(circleMembersQuery());
