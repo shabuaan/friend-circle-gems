@@ -11,6 +11,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+    const value = typeof search["redirect"] === "string" ? (search["redirect"] as string) : "";
+    return value.startsWith("/") && !value.startsWith("//") ? { redirect: value } : {};
+  },
+
   head: () => ({
     meta: [
       { title: "Sign in — FriendCircles" },
