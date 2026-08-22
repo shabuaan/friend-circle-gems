@@ -278,7 +278,7 @@ function CardSide({
 }: {
   title: string;
   subtitle: string;
-  friend?: Friend;
+  friend?: Friend | undefined;
   fallbackName: string;
   highlight?: boolean;
 }) {
@@ -288,7 +288,7 @@ function CardSide({
       <div className="mt-2 flex items-center gap-2">
         <FriendAvatar
           name={friend?.name ?? fallbackName}
-          photoUrl={friend?.photo_url}
+          photoUrl={friend?.photo_url ?? null}
           className="size-9 text-xs"
         />
         <div className="min-w-0">
