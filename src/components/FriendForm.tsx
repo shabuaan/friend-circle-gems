@@ -84,12 +84,15 @@ export function FriendForm({
   friend?: Friend | null;
 }) {
   const [values, setValues] = useState<FriendFormValues>(() => toValues(friend));
-  const [formKey, setFormKey] = useState(friend?.id ?? "new");
+  const [formKey, setFormKey] = useState(open ? `open:${friend?.id ?? "new"}` : "closed");
   const queryClient = useQueryClient();
 
-  if (open && formKey !== (friend?.id ?? "new")) {
-    setFormKey(friend?.id ?? "new");
-    setValues(toValues(friend));
+  // Reinitialise every time the dialog is opened (or switched to another friend),
+  // so "Add friend" always starts from a blank form.
+  const nextKey = open ? `open:${friend?.id ?? "new"}` : "closed";
+  if (formKey !== nextKey) {
+    setFormKey(nextKey);
+    if (open) setValues(toValues(friend));
   }
 
   const set = <K extends keyof FriendFormValues>(key: K, value: FriendFormValues[K]) =>
