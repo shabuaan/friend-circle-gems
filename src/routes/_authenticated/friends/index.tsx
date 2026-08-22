@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { circleMembersQuery, circlesQuery, friendsQuery, interestsQuery } from "@/lib/queries";
+import { useAuth } from "@/hooks/useAuth";
 import { getBirthdayInfo, formatBirthdayLabel } from "@/lib/birthday";
 import { circleColorClass } from "@/lib/types";
 import { FriendAvatar } from "@/components/FriendAvatar";
