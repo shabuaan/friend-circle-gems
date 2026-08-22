@@ -38,6 +38,8 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
+  const destination = (redirect ?? "/dashboard") as "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -46,7 +48,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard", replace: true });
+      if (data.session) navigate({ to: destination, replace: true });
     });
   }, [navigate]);
 
@@ -59,7 +61,7 @@ function AuthPage() {
       toast.error(error.message);
       return;
     }
-    navigate({ to: "/dashboard", replace: true });
+    navigate({ to: destination, replace: true });
   }
 
   async function handleSignUp(event: React.FormEvent) {
@@ -79,7 +81,7 @@ function AuthPage() {
       return;
     }
     if (data.session) {
-      navigate({ to: "/dashboard", replace: true });
+      navigate({ to: destination, replace: true });
       return;
     }
     setAwaitingConfirm(true);
@@ -96,7 +98,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/dashboard", replace: true });
+    navigate({ to: destination, replace: true });
   }
 
   return (
