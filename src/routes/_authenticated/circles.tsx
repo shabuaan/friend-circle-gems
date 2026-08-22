@@ -1,11 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { LogOut, Plus, Share2, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { circleMembersQuery, circlesQuery, currentUserId, friendsQuery } from "@/lib/queries";
 import { CIRCLE_COLORS, circleColorClass } from "@/lib/types";
+import { circleSharesQuery } from "@/lib/sharing";
+import { ShareCircleDialog } from "@/components/ShareCircleDialog";
+import { Badge } from "@/components/ui/badge";
 import { FriendAvatar } from "@/components/FriendAvatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +51,17 @@ function CirclesPage() {
   const [description, setDescription] = useState("");
   const [color, setColor] = useState<string>(CIRCLE_COLORS[0].value);
 
+  const [shareTarget, setShareTarget] = useState<{ id: string; name: string } | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    currentUserId()
+      .then(setUserId)
+      .catch(() => setUserId(null));
+  }, []);
+
   const circles = useQuery(circlesQuery());
+  const shares = useQuery(circleSharesQuery());
   const friends = useQuery(friendsQuery());
   const members = useQuery(circleMembersQuery());
 
@@ -87,6 +100,24 @@ function CirclesPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const leaveCircle = useMutation({
+    mutationFn: async (circleId: string) => {
+      const uid = await currentUserId();
+      const { error } = await supabase
+        .from("circle_shares")
+        .delete()
+        .eq("circle_id", circleId)
+        .eq("shared_with_user_id", uid);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["circles"] });
+      queryClient.invalidateQueries({ queryKey: ["circle_shares"] });
+      toast.success("You left the circle");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -115,6 +146,8 @@ function CirclesPage() {
             .filter((m) => m.circle_id === circle.id)
             .map((m) => friendById.get(m.friend_id))
             .filter(Boolean);
+          const isOwner = userId != null && circle.user_id === userId;
+          const sharedCount = (shares.data ?? []).filter((s) => s.circle_id === circle.id).length;
           return (
             <Card key={circle.id} className="paper">
               <CardHeader className="flex flex-row items-start gap-2 pb-3">
@@ -125,17 +158,47 @@ function CirclesPage() {
                     {circle.description || `${circleFriends.length} members`}
                   </p>
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="ml-auto"
-                  aria-label={`Delete ${circle.name}`}
-                  onClick={() => {
-                    if (confirm(`Delete the circle "${circle.name}"?`)) deleteCircle.mutate(circle.id);
-                  }}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+                <div className="ml-auto flex items-center gap-1">
+                  {isOwner ? (
+                    <>
+                      {sharedCount > 0 && <Badge variant="secondary">Shared</Badge>}
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        aria-label={`Share ${circle.name}`}
+                        onClick={() => setShareTarget({ id: circle.id, name: circle.name })}
+                      >
+                        <Share2 className="size-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        aria-label={`Delete ${circle.name}`}
+                        onClick={() => {
+                          if (confirm(`Delete the circle "${circle.name}"?`))
+                            deleteCircle.mutate(circle.id);
+                        }}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Badge variant="outline">Shared with you</Badge>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        aria-label={`Leave ${circle.name}`}
+                        onClick={() => {
+                          if (confirm(`Leave the circle "${circle.name}"?`))
+                            leaveCircle.mutate(circle.id);
+                        }}
+                      >
+                        <LogOut className="size-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-1">
                 {circleFriends.length === 0 && (
@@ -163,6 +226,15 @@ function CirclesPage() {
           );
         })}
       </div>
+
+      {shareTarget && (
+        <ShareCircleDialog
+          circleId={shareTarget.id}
+          circleName={shareTarget.name}
+          open={shareTarget !== null}
+          onOpenChange={(next) => !next && setShareTarget(null)}
+        />
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
