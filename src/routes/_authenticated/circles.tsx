@@ -8,6 +8,7 @@ import { circleMembersQuery, circlesQuery, currentUserId, friendsQuery } from "@
 import { CIRCLE_COLORS, circleColorClass } from "@/lib/types";
 import { circleSharesQuery } from "@/lib/sharing";
 import { ShareCircleDialog } from "@/components/ShareCircleDialog";
+import { CircleDuplicates } from "@/components/CircleDuplicates";
 import { Badge } from "@/components/ui/badge";
 import { FriendAvatar } from "@/components/FriendAvatar";
 import { Button } from "@/components/ui/button";
