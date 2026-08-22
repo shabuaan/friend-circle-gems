@@ -46,6 +46,56 @@ export type Database = {
           },
         ]
       }
+      circle_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          circle_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          invited_email: string | null
+          owner_id: string
+          status: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          circle_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invited_email?: string | null
+          owner_id: string
+          status?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          circle_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invited_email?: string | null
+          owner_id?: string
+          status?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "circle_invites_circle_id_fkey"
+            columns: ["circle_id"]
+            isOneToOne: false
+            referencedRelation: "circles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       circle_members: {
         Row: {
           circle_id: string
@@ -81,6 +131,38 @@ export type Database = {
             columns: ["friend_id"]
             isOneToOne: false
             referencedRelation: "friends"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      circle_shares: {
+        Row: {
+          circle_id: string
+          created_at: string
+          id: string
+          owner_id: string
+          shared_with_user_id: string
+        }
+        Insert: {
+          circle_id: string
+          created_at?: string
+          id?: string
+          owner_id: string
+          shared_with_user_id: string
+        }
+        Update: {
+          circle_id?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          shared_with_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "circle_shares_circle_id_fkey"
+            columns: ["circle_id"]
+            isOneToOne: false
+            referencedRelation: "circles"
             referencedColumns: ["id"]
           },
         ]
@@ -324,7 +406,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      accept_circle_invite: { Args: { _token: string }; Returns: string }
+      can_access_circle: {
+        Args: { _circle: string; _user: string }
+        Returns: boolean
+      }
+      can_access_friend: {
+        Args: { _friend: string; _user: string }
+        Returns: boolean
+      }
+      circle_access_list: {
+        Args: { _circle: string }
+        Returns: {
+          created_at: string
+          display_name: string
+          email: string
+          user_id: string
+        }[]
+      }
+      shares_circle_with: { Args: { _a: string; _b: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

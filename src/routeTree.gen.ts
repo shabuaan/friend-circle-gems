@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBirthdaysRouteImport } from './routes/_authenticated/birthdays'
 import { Route as AuthenticatedCirclesRouteImport } from './routes/_authenticated/circles'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as JoinTokenRouteImport } from './routes/join.$token'
 import { Route as AuthenticatedFriendsIndexRouteImport } from './routes/_authenticated/friends/index'
 import { Route as AuthenticatedFriendsFriendIdRouteImport } from './routes/_authenticated/friends/$friendId'
 
@@ -47,6 +48,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const JoinTokenRoute = JoinTokenRouteImport.update({
+  id: '/join/$token',
+  path: '/join/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedFriendsIndexRoute =
   AuthenticatedFriendsIndexRouteImport.update({
     id: '/friends/',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/birthdays': typeof AuthenticatedBirthdaysRoute
   '/circles': typeof AuthenticatedCirclesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/join/$token': typeof JoinTokenRoute
   '/friends/$friendId': typeof AuthenticatedFriendsFriendIdRoute
   '/friends/': typeof AuthenticatedFriendsIndexRoute
 }
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/birthdays': typeof AuthenticatedBirthdaysRoute
   '/circles': typeof AuthenticatedCirclesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/join/$token': typeof JoinTokenRoute
   '/friends/$friendId': typeof AuthenticatedFriendsFriendIdRoute
   '/friends': typeof AuthenticatedFriendsIndexRoute
 }
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/_authenticated/birthdays': typeof AuthenticatedBirthdaysRoute
   '/_authenticated/circles': typeof AuthenticatedCirclesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/join/$token': typeof JoinTokenRoute
   '/_authenticated/friends/$friendId': typeof AuthenticatedFriendsFriendIdRoute
   '/_authenticated/friends/': typeof AuthenticatedFriendsIndexRoute
 }
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/birthdays'
     | '/circles'
     | '/dashboard'
+    | '/join/$token'
     | '/friends/$friendId'
     | '/friends/'
   fileRoutesByTo: FileRoutesByTo
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/birthdays'
     | '/circles'
     | '/dashboard'
+    | '/join/$token'
     | '/friends/$friendId'
     | '/friends'
   id:
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/_authenticated/birthdays'
     | '/_authenticated/circles'
     | '/_authenticated/dashboard'
+    | '/join/$token'
     | '/_authenticated/friends/$friendId'
     | '/_authenticated/friends/'
   fileRoutesById: FileRoutesById
@@ -124,6 +136,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  JoinTokenRoute: typeof JoinTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -170,6 +183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/join/$token': {
+      id: '/join/$token'
+      path: '/join/$token'
+      fullPath: '/join/$token'
+      preLoaderRoute: typeof JoinTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/friends/': {
       id: '/_authenticated/friends/'
       path: '/friends'
@@ -210,6 +230,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  JoinTokenRoute: JoinTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
