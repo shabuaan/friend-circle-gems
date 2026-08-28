@@ -92,13 +92,11 @@ function AuthPage() {
       provider: "google",
       options: { redirectTo: `${window.location.origin}/arenas` },
     });
-    if (result.error) {
-      setBusy(false);
-      toast.error("Google sign-in failed. Please try again.");
-      return;
+    if (error) {
+      setIsLoading(false);
+      toast.error(error.message);
     }
-    if (result.redirected) return;
-    navigate({ to: destination, replace: true });
+  };
   }
 
   return (
