@@ -86,17 +86,16 @@ function AuthPage() {
     setAwaitingConfirm(true);
   }
 
-  async function handleGoogle() {
+    async function handleGoogle() {
     setBusy(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/arenas` },
+      options: { redirectTo: `${window.location.origin}${destination}` },
     });
     if (error) {
-      setIsLoading(false);
+      setBusy(false);
       toast.error(error.message);
     }
-  };
   }
 
   return (
